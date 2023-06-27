@@ -18,7 +18,7 @@ export default class Project extends Component {
     super();
     
     const currentDate = new Date();
-    const expireDate = new Date(currentDate.getTime() + 10 * 24 * 60 * 60 * 1000); // Add 10 days (10 * 24 hours * 60 minutes * 60 seconds * 1000 milliseconds)
+    const expireDate = new Date(currentDate.getTime() + 10 * 24 * 60 * 60 * 1000).toISOString();; // Add 10 days (10 * 24 hours * 60 minutes * 60 seconds * 1000 milliseconds)
    
     this.state = {
 
@@ -53,16 +53,17 @@ export default class Project extends Component {
     const storedUser = await AsyncStorage.getItem('user');
     const parsedUser = JSON.parse(storedUser);
     this.state.usertype = parsedUser.user_Type
-    console.log(this.state.usertype);
+    // console.log(this.state.usertype);
   }
 getEditCourse = async () => {
     try {
         const storedCourse = await AsyncStorage.getItem('editcourse');
         const parsedCourse = JSON.parse(storedCourse);
+        
         if (parsedCourse) {
           this.setState({ listCourse: parsedCourse });
 
-          console.log(JSON.stringify(this.state.listCourse));
+          // console.log(JSON.stringify(this.state.listCourse));
 
           this.state.Title = this.state.listCourse.Title;
           this.state.Caption = this.state.listCourse.Caption;

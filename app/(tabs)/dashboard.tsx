@@ -67,12 +67,12 @@ export default function Other() {
             </Text>
           </Col>
           
-          <Col style={styles.ColContainer} >
+          {/* <Col style={styles.ColContainer} >
             <MaterialCommunityIcons name="note-multiple" color={'grey'} size={24} />
               <Text style={{ marginTop: 5, fontSize: 10, opacity: 0.5 }}>
                 Course List
             </Text>
-          </Col>
+          </Col> */}
         </Row>
        
       </Grid>

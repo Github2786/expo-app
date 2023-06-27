@@ -10,6 +10,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { Camera } from 'expo-camera';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import EditCourse from '../screens/ediCourse'
+// import Push from '../screens/push'
+
 
 const DashboardScreen = () => {
   const [iscourseviewModal, setcourseviewModalVisible] = useState(false);
@@ -39,7 +41,7 @@ const DashboardScreen = () => {
     
      await AsyncStorage.setItem('editcourse', JSON.stringify(course));
      const storedCourse = await AsyncStorage.getItem('editcourse');
-     console.log("AA "+storedCourse)
+    //  console.log("AA "+storedCourse)
   };
 
   const toggleviewcourseCloseModal = () => {
@@ -81,6 +83,7 @@ const DashboardScreen = () => {
 
   return (
     <View style={styles.container}>
+      {/* <Push/> */}
        <View style={styles.featuredCourseContainer}>
         <Text style={styles.featuredCourseHeader}>Upcoming Course</Text>
         
