@@ -167,7 +167,26 @@ const login = async () => {
     console.error(error);
   }
 };
+async function sendPushNotification() {
+  console.log("Pushnotifi")
+  const message = {
+    to: 'ExponentPushToken[GtWQ_1Pmhy9mnT2gF5BN6H]',
+    sound: 'default',
+    title: 'Test title',
+    body: 'Test body',
+    data: { testData: 'test data' },
+  };
 
+  await fetch('https://exp.host/--/api/v2/push/send', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Accept-encoding': 'gzip, deflate',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(message),
+  });
+}
 
   return (
     <View style={{ flex: 1, justifyContent: "center" }} >
@@ -214,7 +233,7 @@ const login = async () => {
           </View>
 
           <View style={styles.loginCaption2}>
-            <TouchableOpacity onPress={login} style={styles.loginButton}>
+            <TouchableOpacity onPress={sendPushNotification} style={styles.loginButton}>
               <Text style={styles.loginText2}>Login</Text>
             </TouchableOpacity>
 
