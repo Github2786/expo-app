@@ -4,11 +4,13 @@ import { AuthProvider } from "../context/AuthProvider";
 // import { Subscription } from 'expo-modules-core';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
-
+import { useRouter } from "expo-router";
+// import { CommonActions } from '@react-navigation/native';
+import * as Linking from 'expo-linking';
 import { View, Text,Platform, Image, StyleSheet, ScrollView,TouchableWithoutFeedback ,TextInput,PixelRatio} from 'react-native';
 
 export default function RootLayout() {
-
+  const router = useRouter();
   const [expoPushToken, setExpoPushToken] = useState('');
   // const [notification, setNotification] = useState(false);
   // const notificationListener = useRef();
@@ -33,15 +35,47 @@ export default function RootLayout() {
       Notifications.removeNotificationSubscription(responseListener.current);
     };
    }, []);
- 
+    
+   // Function to handle opening a notification with a dynamic link
+    const handleNotificationOpen = (notification) => {
+      const { data } = notification.request.content;
 
-  Notifications.setNotificationHandler({
-      handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldPlaySound: false,
-        shouldSetBadge: false,
-      }),
-    });
+      if (data.link) {
+        // Open the dynamic link URL
+        Linking.openURL(data.link);
+        console.log(data)
+        // router.push('/other')
+        // router.replace("/home")
+        // navigation.dispatch(
+        //   CommonActions.navigate({
+        //     name: 'Other',
+        //   })
+        // );
+        
+      }
+    };
+
+  // Notifications.setNotificationHandler({
+
+  //   handleNotificationOpen(data)
+  //     handleNotification: async () => ({
+  //       shouldShowAlert: true,
+  //       shouldPlaySound: true,
+  //       shouldSetBadge: false,
+  //     }),
+  //   });
+
+  // Set up the notification listener
+Notifications.setNotificationHandler({
+  handleNotification: async (notification) => {
+    handleNotificationOpen(notification);
+    return {
+      shouldPlaySound: true,
+      shouldShowAlert: true,
+      shouldSetBadge: true,
+    };
+  },
+});
     async function registerForPushNotificationsAsync() {
       let token;
       if (Device.isDevice) {
