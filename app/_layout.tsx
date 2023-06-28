@@ -15,6 +15,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function RootLayout() {
   const router = useRouter();
   const [expoPushToken, setExpoPushToken] = useState('');
+  const [PushToken, setPushToken] = useState('');
   // const [notification, setNotification] = useState(false);
   // const notificationListener = useRef();
   // const responseListener = useRef();
@@ -23,7 +24,11 @@ export default function RootLayout() {
   const responseListener = useRef<Notifications.Subscription>();
   const lastNotificationResponse = Notifications.useLastNotificationResponse();
   useEffect(() => {
+    if (PushToken !== '') {
+      saveToken();
+    }
     registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+   
  
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
       setNotification(notification);
@@ -38,14 +43,16 @@ export default function RootLayout() {
       console.log("testing ");
       // notificationNavigationHandler(response.notification.request.content);
     });
- 
+    // saveToken();
     
     return () => {
       Notifications.removeNotificationSubscription(notificationListener.current);
       Notifications.removeNotificationSubscription(responseListener.current);
     };
-
-   }, []);
+    
+    
+    
+   }, [PushToken]);
     
    
    // Function to handle opening a notification with a dynamic link
@@ -109,11 +116,15 @@ Notifications.setNotificationHandler({
           return;
         }
         token = (await Notifications.getExpoPushTokenAsync()).data;
-        console.log(token);
-        saveToken(token)
+        // console.log(token);
+        setPushToken(token)
+        
+      
+        // console.log("ash " +PushToken)
+        
       } else {
         alert('Must use physical device for Push Notifications');
-        // saveToken('ashik123')
+      
       }
     
       if (Platform.OS === 'android') {
@@ -124,12 +135,18 @@ Notifications.setNotificationHandler({
           lightColor: '#FF231F7C',
         });
       }
-      
+        if(PushToken)
+        {
+          saveToken();
+        }else
+        {
+          console.log("error")
+        }
       return token;
     }
-    const saveToken = async({ token }) => {
+    const saveToken = async() => {
       // navigate to app screen
-      console.log('Token is', token);
+      console.log('Token is', PushToken);
       const storedUser = await AsyncStorage.getItem('user');
       const parsedUser = JSON.parse(storedUser);
       let name = parsedUser.name
@@ -141,7 +158,7 @@ Notifications.setNotificationHandler({
         //username: username,
          name: name,
          email: email,
-         token: token,//'usertoken123456',//token,
+         token: PushToken,//'usertoken123456',//token,
          user_id: Id,
          status: userType == 1 ? 1 : 0,
          methodName: 'SaveToken',
