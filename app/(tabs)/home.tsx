@@ -152,9 +152,10 @@ const DashboardScreen = () => {
         <Text style={styles.featuredCourseHeader}>Upcoming Course</Text>
         
         {listData.length > 0 && (
-          <View>
+          <View  >
             <Card containerStyle={styles.cardContainer}>
               <Card.Image
+                onPress={() => toggleviewcourseModal(listData[0])} 
                 source={{ uri: 'https://globaltraining.iclick.best/Api/Controller/uploads/' + listData[0].Course_image }}
                 style={styles.cardImage}
                 resizeMode="cover"

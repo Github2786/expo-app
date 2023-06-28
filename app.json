@@ -5,6 +5,9 @@
       "bundler": "metro"
     },
     "name": "expo-tab-router-exmaple",
-    "slug": "expo-tab-router-exmaple"
+    "slug": "expo-tab-router-exmaple",
+    "android": {
+      "useNextNotificationsApi": true
+    }
   }
 }

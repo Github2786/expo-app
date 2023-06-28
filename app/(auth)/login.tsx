@@ -34,7 +34,7 @@ export default function Login() {
 
       if(storedUser)
         {
-          console.log(JSON.parse(storedUser));
+          // console.log(JSON.parse(storedUser));
           setUser(JSON.parse(storedUser))
         // router.replace("/login");
         } 
@@ -126,10 +126,10 @@ const login = async () => {
  
   
   const credentials = {
-   //username: username,
-   // password: password,
-    username: 'superadmin@123.com',
-    password: '123',
+   username: username,
+   password: password,
+    // username: 'superadmin@123.com',
+    // password: '123',
     methodName: 'Login',
   };
 
@@ -167,74 +167,9 @@ const login = async () => {
     console.error(error);
   }
 };
-async function sendPushNotification() {
- 
-  const message = {
-    to: 'ExponentPushToken[GtWQ_1Pmhy9mnT2gF5BN6H]',
-    sound: 'default',
-    title: 'Test title',
-    body: 'Test body',
-    data: { testData: 'test data' },
-  };
 
-  await fetch('https://exp.host/--/api/v2/push/send', {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Accept-encoding': 'gzip, deflate',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(message),
-  });
-}
 
-// Function to send a push notification to multiple tokens
-const sendPushNotifications = async () => {
-  const expoPushTokens = [
-    'ExponentPushToken[GtWQ_1Pmhy9mnT2gF5BN6H]', // Token 1
-    'ABC123', // Token 2
-    
-  ];
-  // Construct the notification content
-  const notificationContent = {
-    sound: 'default',
-    title: 'Test title',
-    body: 'Test body',
-    data: {
-      testData: 'test data',
-      link: Linking.createURL('/home'), //'https://google.com/', // Dynamic link URL
-    },
-  };
 
-  try {
-    // Send the push notification for each token
-    const notificationPromises = expoPushTokens.map(async (expoPushToken) => {
-      const individualNotification = {
-        ...notificationContent,
-        to: expoPushToken,
-      };
-
-      const response = await fetch('https://exp.host/--/api/v2/push/send', {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Accept-encoding': 'gzip, deflate',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(individualNotification),
-      });
-
-      const data = await response.json();
-      console.log('Push notification sent successfully:', data);
-    });
-
-    // Wait for all notifications to be sent
-    await Promise.all(notificationPromises);
-    console.log('All push notifications sent successfully');
-  } catch (error) {
-    console.error('Error sending push notifications:', error);
-  }
-}
   return (
     <View style={{ flex: 1, justifyContent: "center" }} >
       {/* <TouchableOpacity onPress={login}>
@@ -280,7 +215,7 @@ const sendPushNotifications = async () => {
           </View>
 
           <View style={styles.loginCaption2}>
-            <TouchableOpacity onPress={sendPushNotifications} style={styles.loginButton}>
+            <TouchableOpacity onPress={login} style={styles.loginButton}>
               <Text style={styles.loginText2}>Login</Text>
             </TouchableOpacity>
 

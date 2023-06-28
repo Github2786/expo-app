@@ -36,7 +36,7 @@ const Header = () => {
 
           <View style={styles.bellIconContainer}>
             <Avatar
-              onPress={togglecourseModal}
+              // onPress={togglecourseModal}
               rounded
               size="small"
               overlayContainerStyle={styles.bellIcon2}
@@ -56,7 +56,11 @@ const Header = () => {
           <View style={{ flex: 1, justifyContent: 'center' }}>
             <TouchableWithoutFeedback onPress={togglecourseModal}>
               <MaterialCommunityIcons name="arrow-left" color="grey" size={24} />
+              
             </TouchableWithoutFeedback>
+            <View >
+                {/* <Text style={{ justifyContent: 'center',alignContent:'center' }}>No Content Available</Text> */}
+            </View>
           </View>
         </Modal>
       </View>

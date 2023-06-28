@@ -13,7 +13,7 @@ export default function Accout() {
   }
 
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "center",backgroundColor: '#fff', }}>
       <Text>Account</Text>
       <Text>{user && user.name}</Text>
       <TouchableOpacity onPress={() => logout()}>
@@ -21,4 +21,8 @@ export default function Accout() {
       </TouchableOpacity>
     </View>
   );
+
+  
 }
+
+

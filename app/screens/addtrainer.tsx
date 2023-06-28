@@ -178,10 +178,35 @@ uploadImageToServer = () => {
     console.log(response.data);
     if (response.data.message === "New record created successfully") {
       console.log('Success');
+      Alert.alert(
+        'Success',
+        'Record created successfully',
+        [
+          {
+            text: 'ok',
+            style: 'destructive'
+            
+          },
+        ],
+        { cancelable: true }
+      );
      // const userData = response.data.data;
      
     
     } else {
+
+      Alert.alert(
+        'Failed',
+        'Something went wrong',
+        [
+          {
+            text: 'ok',
+            style: 'destructive'
+            
+          },
+        ],
+        { cancelable: true }
+      );
       console.log('Failed');
       
     }

@@ -41,7 +41,7 @@ const TrainerScreen = () => {
     
      await AsyncStorage.setItem('edittrainer', JSON.stringify(course));
      const storedtrainer = await AsyncStorage.getItem('edittrainer');
-     console.log("AA "+storedtrainer)
+    //  console.log("AA "+storedtrainer)
   };
 
   const toggleviewcourseCloseModal = () => {

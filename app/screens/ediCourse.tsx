@@ -9,7 +9,7 @@ import { Entypo } from "@expo/vector-icons";
 import axios from 'axios';
 import {  Button, Snackbar } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import * as Linking from 'expo-linking';
 export default class Project extends Component {
   
 
@@ -39,7 +39,11 @@ export default class Project extends Component {
       isLoading:false,
       setIsLoading:false,
       listCourse:[],
-      usertype:null
+      usertype:null,
+      tokenlistData:[],
+      name:'',
+      acceptedmail:'',
+      isButtonClicked: false
      
       
     }
@@ -48,11 +52,16 @@ export default class Project extends Component {
   componentDidMount() {
     this.getEditCourse();
     this.getUserType();
+    this.getToken();
   }
   getUserType = async () =>{
     const storedUser = await AsyncStorage.getItem('user');
     const parsedUser = JSON.parse(storedUser);
-    this.state.usertype = parsedUser.user_Type
+    this.state.usertype = parsedUser.user_Type;
+    this.state.name = parsedUser.name;
+    this.state.acceptedmail = parsedUser.email;
+    this.state.accepteduserid = parsedUser.Trainer_id;
+    
     // console.log(this.state.usertype);
   }
 getEditCourse = async () => {
@@ -101,8 +110,6 @@ getPermissionAsync = async () => {
     })
   }
 
- 
-
 pickImage = async () => {
   if(this.state.usertype == 1)
   {
@@ -128,9 +135,6 @@ pickImage = async () => {
   }
 }
 }
-
-
-
 showDeleteConfirmation = () => {
   Alert.alert(
     'Delete Confirmation',
@@ -252,6 +256,22 @@ uploadImageToServer = () => {
 
  
 }
+getToken=()=>{
+  fetch('https://globaltraining.iclick.best/Api/Controller/GetTokensofAdmin.php')
+  .then(response => response.json())
+  .then(data => {
+    // tokenlistData(data.data);
+   
+    for (let i = 0; i < data.data.length; i++) {
+      this.state.tokenlistData.push(data.data[i].Token);
+    }
+     console.log(this.state.tokenlistData)
+    // this.state.tokenlistData.push(data);
+  })
+  .catch(error => {
+    console.log("res " + error);
+  });
+}
 updatecourseData = () =>{
 
         const credentials = {
@@ -288,6 +308,100 @@ updatecourseData = () =>{
 goback = () => {
  
 };
+acceptJob= () => {
+  const credentials = {
+  
+    course_id:this.state.Course_id,
+    accepted_by:this.state.accepteduserid,
+    accepted_date:new Date().toISOString().split('T')[0],
+    methodName: 'AcceptCourse',
+    
+};
+console.log("Course accepted "+JSON.stringify(credentials));
+axios.post('https://globaltraining.iclick.best/Api/Controller/Savecourse.php', credentials)
+.then(response => {
+  // Handle successful login response
+  console.log(response.data);
+  if (response.data === "Success") {
+    console.log('Success');
+    this.sendPushNotifications()
+    this.setState({ isButtonClicked: true });
+  // const userData = response.data.data;
+  Alert.alert(
+    'Congratulations! ',
+    'This Course is accepted',
+    [
+      {
+        text: 'ok',
+        style: 'destructive'
+        
+      },
+    ],
+    { cancelable: true }
+  );
+  
+  } else {
+    console.log('Failed');
+    
+  }
+})
+.catch(error => {
+  // Handle login error
+  console.error(error);
+});
+};
+
+sendPushNotifications = async () => {
+  const expoPushTokens = this.state.tokenlistData;
+  // Construct the notification content
+  const notificationContent = {
+    sound: 'default',
+    title: 'Congratulations! Your request to take on this course is accepted!',
+    body: this.state.Title,
+    data: {
+      link: Linking.createURL('/home'), //'https://google.com/', // Dynamic link URL
+    },
+    ios: {
+      // Specify the iOS-specific notification configuration
+      icon: '../assets/logo.png',
+      // Other iOS-specific properties if needed
+    },
+    android: {
+      // Specify the Android-specific notification configuration
+      icon: '../assets/logo.png',
+      // Other Android-specific properties if needed
+    },
+  };
+
+  try {
+    // Send the push notification for each token
+    const notificationPromises = expoPushTokens.map(async (expoPushToken) => {
+      const individualNotification = {
+        ...notificationContent,
+        to: expoPushToken,
+      };
+
+      const response = await fetch('https://exp.host/--/api/v2/push/send', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Accept-encoding': 'gzip, deflate',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(individualNotification),
+      });
+
+      const data = await response.json();
+      console.log('Push notification sent successfully:');
+    });
+
+    // Wait for all notifications to be sent
+    await Promise.all(notificationPromises);
+    console.log('All push notifications sent successfully'+notificationContent);
+  } catch (error) {
+    console.error('Error sending push notifications:', error);
+  }
+}
 
   render() {
     return (
@@ -344,7 +458,7 @@ goback = () => {
         />
         
         <View style={styles.buttonContainer}>
-          {this.state.usertype == 1 && (
+        {this.state.usertype === 0 ? (
             <>
               <Button onPress={this.showDeleteConfirmation} style={styles.TextInputStylebtn2}>
                 <Text style={styles.TextStyle}>Delete</Text>
@@ -355,7 +469,19 @@ goback = () => {
                 <Text style={styles.TextStyle}>Update</Text>
               </Button>
             </>
-          )}
+              ) : (
+                
+              <Button onPress={this.acceptJob} style={styles.TextInputStylebtn} disabled={this.state.isButtonClicked}>
+                <Text style={styles.TextStyle}>Accept Job</Text>
+              </Button>
+              )}
+
+
+
+
+
+            
+          
         </View>
 
 

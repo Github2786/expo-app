@@ -175,7 +175,7 @@ afterDelete = () => {
 deleteItem = () => {
   // Perform the delete operation here
   // ...
-  console.log('id '+this.state.Trainer_id);
+  // console.log('id '+this.state.Trainer_id);
     const credentials = {
       trainer_id:this.state.Trainer_id,
       methodName: 'DeleteTrainer',

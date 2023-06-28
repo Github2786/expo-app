@@ -8,6 +8,9 @@ import { useRouter } from "expo-router";
 // import { CommonActions } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
 import { View, Text,Platform, Image, StyleSheet, ScrollView,TouchableWithoutFeedback ,TextInput,PixelRatio} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function RootLayout() {
   const router = useRouter();
@@ -17,8 +20,8 @@ export default function RootLayout() {
   // const responseListener = useRef();
   const [notification, setNotification] = useState<Notifications.Notification>();
   const notificationListener = useRef<Notifications.Subscription>();                  
-  const responseListener =useRef<Notifications.Subscription>();
- 
+  const responseListener = useRef<Notifications.Subscription>();
+  const lastNotificationResponse = Notifications.useLastNotificationResponse();
   useEffect(() => {
     registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
  
@@ -26,25 +29,35 @@ export default function RootLayout() {
       setNotification(notification);
     });
  
+    // responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+    //   console.log("testing "+response);
+    //   // notificationCommonHandler(response.notification);
+    //   // notificationNavigationHandler(response.notification.request.content);
+    // });
     responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log(response);
+      console.log("testing ");
+      // notificationNavigationHandler(response.notification.request.content);
     });
  
+    
     return () => {
       Notifications.removeNotificationSubscription(notificationListener.current);
       Notifications.removeNotificationSubscription(responseListener.current);
     };
+
    }, []);
     
+   
    // Function to handle opening a notification with a dynamic link
     const handleNotificationOpen = (notification) => {
       const { data } = notification.request.content;
 
+      console.log(notification.request)
       if (data.link) {
         // Open the dynamic link URL
-        Linking.openURL(data.link);
-        console.log(data)
-        // router.push('/other')
+        // Linking.openURL(data.link);
+        console.log("last "+lastNotificationResponse)
+        // router.push(data.link)
         // router.replace("/home")
         // navigation.dispatch(
         //   CommonActions.navigate({
@@ -54,7 +67,12 @@ export default function RootLayout() {
         
       }
     };
+    const notificationNavigationHandler = ({ data }) => {
+      // navigate to app screen
+      console.log('A notification has been touched', data)
+    }
 
+    
   // Notifications.setNotificationHandler({
 
   //   handleNotificationOpen(data)
@@ -69,6 +87,7 @@ export default function RootLayout() {
 Notifications.setNotificationHandler({
   handleNotification: async (notification) => {
     handleNotificationOpen(notification);
+    
     return {
       shouldPlaySound: true,
       shouldShowAlert: true,
@@ -91,8 +110,10 @@ Notifications.setNotificationHandler({
         }
         token = (await Notifications.getExpoPushTokenAsync()).data;
         console.log(token);
+        saveToken(token)
       } else {
         alert('Must use physical device for Push Notifications');
+        // saveToken('ashik123')
       }
     
       if (Platform.OS === 'android') {
@@ -106,7 +127,49 @@ Notifications.setNotificationHandler({
       
       return token;
     }
- 
+    const saveToken = async({ token }) => {
+      // navigate to app screen
+      console.log('Token is', token);
+      const storedUser = await AsyncStorage.getItem('user');
+      const parsedUser = JSON.parse(storedUser);
+      let name = parsedUser.name
+      let userType = parsedUser.user_Type
+      let email = parsedUser.email
+      let Id = parsedUser.Id
+     
+      const credentials = {
+        //username: username,
+         name: name,
+         email: email,
+         token: token,//'usertoken123456',//token,
+         user_id: Id,
+         status: userType == 1 ? 1 : 0,
+         methodName: 'SaveToken',
+       };
+      //  console.log(credentials);
+       try {
+         const response = await axios.post(
+           'https://globaltraining.iclick.best/Api/Controller/SaveFcmtoken.php',
+           credentials
+         );
+     
+         if (response.data === "Token created successfully") { 
+        
+           console.log(response.data)
+          
+          
+          
+           // console.log(JSON.parse(storedUser));
+         } else {
+           console.log('Failed');
+          
+           
+         }
+       } catch (error) {
+         console.error(error);
+       }
+    }
+
     
   return (
     <AuthProvider>

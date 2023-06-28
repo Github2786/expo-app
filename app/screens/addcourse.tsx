@@ -8,14 +8,15 @@ import DatePicker from "expo-datepicker";
 import { Entypo } from "@expo/vector-icons";
 import axios from 'axios';
 import {  Snackbar } from 'react-native-paper';
+import * as Linking from 'expo-linking';
 export default class Project extends Component {
   
-  constructor() {
+constructor() {
 
     super();
     const currentDate = new Date();
     const expireDate = new Date(currentDate.getTime() + 10 * 24 * 60 * 60 * 1000); // Add 10 days (10 * 24 hours * 60 minutes * 60 seconds * 1000 milliseconds)
-   
+    
     this.state = {
 
       ImageSource: null,
@@ -31,12 +32,18 @@ export default class Project extends Component {
       Course_image:'',
       added_by:'Admin',
       isLoading:false,
-      setIsLoading:false
+      setIsLoading:false,
+      tokenlistData:[]
 
       
 
     }
-  }
+}
+componentDidMount() {
+this.getToken();
+
+// this.sendPushNotifications('dummycourse')
+}
 
 getPermissionAsync = async () => {
     // Camera roll Permission 
@@ -51,8 +58,7 @@ getPermissionAsync = async () => {
 );
     this.setState({ hasPermission: status === 'granted' });
   }
-
-  handleCameraType=()=>{
+handleCameraType=()=>{
     const { cameraType } = this.state
 
     this.setState({cameraType:
@@ -61,9 +67,6 @@ getPermissionAsync = async () => {
       : Camera.Constants.Type.back
     })
   }
-
- 
-
 pickImage = async () => {
   let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
   if (permissionResult.granted === false) {
@@ -86,43 +89,6 @@ pickImage = async () => {
     });
   }
 }
-
-
-
-
-
-// uploadImageToServer = async () => {
-//   const response = await fetch(this.state.ImageSource);
-//   const blob = await response.blob();
-//   var reader = new FileReader();
-//   reader.onload = () => {
-//     var InsertAPI = 'https://globaltraining.iclick.best/Api/Controller/uploadexpo.php';
-//     var Data = {
-//       img: reader.result,
-//     };
-//     var headers = {
-//       'Accept': 'application/json',
-//       'Content-Type': 'application/json'
-//     };
-//     fetch(InsertAPI, {
-//       method: 'POST',
-//       headers: headers,
-//       body: JSON.stringify(Data),
-//     })
-//       .then((response) => {
-//         console.log(response);
-//         return response.text();
-//       })
-//       .then((responseText) => {
-//         console.log("ok "+responseText);
-//         // Continue with your code
-//       })
-//       .catch((err) => {
-//         console.log(err);
-//       });
-//   };
-//   reader.readAsDataURL(blob);
-// }
 uploadImageToServer = () => {
   // console.log(this.state.Image_TAG)
   fetch(this.state.ImageSource)
@@ -163,7 +129,7 @@ uploadImageToServer = () => {
       console.log(error);
     });
 }
- saveData = () =>{
+saveData = () =>{
   const credentials = {
     name:this.state.Title,
     caption:this.state.Caption,
@@ -180,11 +146,37 @@ uploadImageToServer = () => {
     console.log(response.data);
     if (response.data === "New record created successfully") {
       console.log('Success');
+
+      Alert.alert(
+        'Success',
+        'Record created successfully',
+        [
+          {
+            text: 'ok',
+            style: 'destructive'
+            
+          },
+        ],
+        { cancelable: true }
+      );
+      this.sendPushNotifications(this.state.Title)
      // const userData = response.data.data;
      
     
     } else {
       console.log('Failed');
+      Alert.alert(
+        'Failed',
+        'Something went wrong',
+        [
+          {
+            text: 'ok',
+            style: 'destructive'
+            
+          },
+        ],
+        { cancelable: true }
+      );
       
     }
   })
@@ -193,8 +185,74 @@ uploadImageToServer = () => {
     console.error(error);
   });
 }
+getToken=()=>{
+  fetch('https://globaltraining.iclick.best/Api/Controller/GetTokens.php')
+  .then(response => response.json())
+  .then(data => {
+    // tokenlistData(data.data);
+   
+    for (let i = 0; i < data.data.length; i++) {
+      this.state.tokenlistData.push(data.data[i].Token);
+    }
+// console.log(this.state.tokenlistData)
+    // this.state.tokenlistData.push(data);
+  })
+  .catch(error => {
+    console.log("res " + error);
+  });
+}
+// Function to send a push notification to multiple tokens
+sendPushNotifications = async (coursename) => {
+  const expoPushTokens = this.state.tokenlistData;
+  // Construct the notification content
+  const notificationContent = {
+    sound: 'default',
+    title: 'New Job Available!',
+    body: coursename,
+    data: {
+      link: Linking.createURL('/home'), //'https://google.com/', // Dynamic link URL
+    },
+    ios: {
+      // Specify the iOS-specific notification configuration
+      icon: '../assets/logo.png',
+      // Other iOS-specific properties if needed
+    },
+    android: {
+      // Specify the Android-specific notification configuration
+      icon: '../assets/logo.png',
+      // Other Android-specific properties if needed
+    },
+  };
 
+  try {
+    // Send the push notification for each token
+    const notificationPromises = expoPushTokens.map(async (expoPushToken) => {
+      const individualNotification = {
+        ...notificationContent,
+        to: expoPushToken,
+      };
 
+      const response = await fetch('https://exp.host/--/api/v2/push/send', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Accept-encoding': 'gzip, deflate',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(individualNotification),
+      });
+
+      const data = await response.json();
+      console.log('Push notification sent successfully:', data);
+    });
+
+    // Wait for all notifications to be sent
+    await Promise.all(notificationPromises);
+    console.log('All push notifications sent successfully');
+  } catch (error) {
+    console.error('Error sending push notifications:', error);
+  }
+}
 
   render() {
     return (
