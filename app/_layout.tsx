@@ -6,11 +6,14 @@ import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { useRouter } from "expo-router";
 // import { CommonActions } from '@react-navigation/native';
-import * as Linking from 'expo-linking';
+// import * as Linking from 'expo-linking';
 import { View, Text,Platform, Image, StyleSheet, ScrollView,TouchableWithoutFeedback ,TextInput,PixelRatio} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
+import * as Analytics from 'expo-analytics-amplitude';
+
 
 export default function RootLayout() {
   const router = useRouter();
@@ -24,8 +27,10 @@ export default function RootLayout() {
   const responseListener = useRef<Notifications.Subscription>();
   const lastNotificationResponse = Notifications.useLastNotificationResponse();
   useEffect(() => {
+    // trackScreenView('RootLayout');
     if (PushToken !== '') {
       saveToken();
+     
     }
     registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
    

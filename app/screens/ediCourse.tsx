@@ -9,7 +9,7 @@ import { Entypo } from "@expo/vector-icons";
 import axios from 'axios';
 import {  Button, Snackbar } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Linking from 'expo-linking';
+// import * as Linking from 'expo-linking';
 export default class Project extends Component {
   
 
@@ -359,7 +359,7 @@ sendPushNotifications = async () => {
     title: 'Congratulations! Your request to take on this course is accepted!',
     body: this.state.Title,
     data: {
-      link: Linking.createURL('/home'), //'https://google.com/', // Dynamic link URL
+      // link: Linking.createURL('/home'), //'https://google.com/', // Dynamic link URL
     },
     ios: {
       // Specify the iOS-specific notification configuration

@@ -11,7 +11,7 @@ import { createContext, useContext, useEffect } from "react";
 // import { Redirect } from 'react-router-dom';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {  Snackbar } from 'react-native-paper';
-import * as Linking from 'expo-linking';
+// import * as Linking from 'expo-linking';
 
 export default function Login() {
   const router = useRouter();

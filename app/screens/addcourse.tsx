@@ -8,7 +8,7 @@ import DatePicker from "expo-datepicker";
 import { Entypo } from "@expo/vector-icons";
 import axios from 'axios';
 import {  Snackbar } from 'react-native-paper';
-import * as Linking from 'expo-linking';
+// import * as Linking from 'expo-linking';
 export default class Project extends Component {
   
 constructor() {
@@ -210,7 +210,7 @@ sendPushNotifications = async (coursename) => {
     title: 'New Job Available!',
     body: coursename,
     data: {
-      link: Linking.createURL('/home'), //'https://google.com/', // Dynamic link URL
+      // link: Linking.createURL('/home'), //'https://google.com/', // Dynamic link URL
     },
     ios: {
       // Specify the iOS-specific notification configuration

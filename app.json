@@ -1,13 +1,43 @@
 {
   "expo": {
-    "scheme": "acme",
-    "web": {
-      "bundler": "metro"
+    "name": "Global Training",
+    "slug": "global-training",
+    "version": "1.0.2",
+    "orientation": "portrait",
+    "icon": "./assets/splash.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
     },
-    "name": "expo-tab-router-exmaple",
-    "slug": "expo-tab-router-exmaple",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.iclick.globaltraining",
+      "buildNumber": "1.0.2",
+      "config": {
+        "googleMapsApiKey": "YOUR_GOOGLE_MAPS_API_KEY"
+      }
+    },
     "android": {
-      "useNextNotificationsApi": true
+      "package": "com.iclick.globaltraining",
+      "versionCode": 2,
+      "config": {
+        "googleMaps": {
+          "apiKey": "YOUR_GOOGLE_MAPS_API_KEY"
+        }
+      }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "57a2deac-e683-4f23-83a3-6cb0bb7fa630"
+      }
     }
   }
 }
